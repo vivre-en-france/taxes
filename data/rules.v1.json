@@ -1,0 +1,18 @@
+{
+  "exchangeRateEurToMad": 10.8,
+  "vatRate": 0.2,
+  "dutyRateLow": 0.1,
+  "dutyRateHigh": 0.25,
+  "fixedFeesLow": 50,
+  "fixedFeesHigh": 150,
+  "conditionMultipliers": {
+    "neuf": 1,
+    "occasion": 0.85
+  },
+  "notes": [
+    "Le taux de change est fixe pour garder une estimation simple et stable.",
+    "Les frais fixes sont appliques uniquement en cas d'envoi par colis.",
+    "L'etat \"occasion\" applique une reduction indicative de la valeur.",
+    "Les montants finaux peuvent differer selon les justificatifs presentes."
+  ]
+}

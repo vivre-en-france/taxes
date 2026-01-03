@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://estimateur-douane-telephones.pages.dev/sitemap.xml

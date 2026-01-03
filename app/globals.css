@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: 17 24 39;
+  --paper: 252 248 243;
+  --sand: 246 239 231;
+  --accent: 0 98 51;
+  --accent-dark: 0 76 38;
+  --mist: 224 236 229;
+  --flag-red: 193 39 45;
+}
+
+body {
+  color: rgb(var(--ink));
+  background-color: rgb(var(--paper));
+  background-image:
+    radial-gradient(900px 540px at 12% -10%, rgba(0, 98, 51, 0.2), transparent 60%),
+    radial-gradient(700px 420px at 90% 0%, rgba(193, 39, 45, 0.16), transparent 55%),
+    linear-gradient(180deg, rgb(252, 248, 243) 0%, rgb(246, 242, 236) 45%, rgb(236, 246, 247) 100%);
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(8, 116, 107, 0.18);
+}
+
+@layer components {
+  .container-shell {
+    @apply mx-auto w-full max-w-6xl px-4;
+  }
+
+  .card {
+    @apply rounded-2xl border border-black/10 bg-white/80 p-6 shadow-soft backdrop-blur;
+  }
+
+  .chip {
+    @apply inline-flex items-center rounded-full border border-black/10 bg-sand px-3 py-1 text-xs font-medium uppercase;
+    letter-spacing: 0.08em;
+    color: rgb(var(--flag-red));
+    border-color: rgba(193, 39, 45, 0.25);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-float transition hover:bg-accent-dark;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-black/15 bg-white/70 px-5 py-3 text-sm font-semibold text-ink transition hover:border-black/30 hover:bg-white;
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-black/15 bg-white/80 px-4 py-3 text-sm shadow-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20;
+  }
+
+  .label {
+    @apply text-sm font-semibold text-ink;
+  }
+
+  .helper {
+    @apply text-xs text-black/60;
+  }
+}
