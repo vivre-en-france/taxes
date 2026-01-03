@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const navItems = [
   { href: "/estimer", label: "Estimer" },
-  { href: "/comment-ca-marche", label: "Comment ca marche" },
+  { href: "/comment-ca-marche", label: "Comment ça marche" },
   { href: "/avertissement", label: "Avertissement" }
 ];
 

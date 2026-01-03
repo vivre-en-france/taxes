@@ -3,18 +3,18 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Avertissement",
   description:
-    "Mention legale: outil d'estimation sans valeur officielle pour les droits de douane."
+    "Mention légale: outil d'estimation sans valeur officielle pour les droits de douane."
 };
 
 const AvertissementPage = () => {
   return (
     <div className="container-shell py-12">
       <div className="mb-10 space-y-4">
-        <span className="chip">Legal</span>
+        <span className="chip">Légal</span>
         <h1 className="text-3xl font-semibold md:text-4xl">Avertissement</h1>
         <p className="max-w-2xl text-sm text-black/70 lg:max-w-none">
-          Cet outil fournit une estimation indicative basee sur des hypotheses
-          simplifiees. Il ne remplace pas une decision officielle.
+          Cet outil fournit une estimation indicative basée sur des hypothèses
+          simplifiées. Il ne remplace pas une décision officielle.
         </p>
       </div>
 
@@ -22,16 +22,16 @@ const AvertissementPage = () => {
         <h2 className="text-xl font-semibold">Mentions importantes</h2>
         <ul className="list-disc space-y-3 pl-5 text-sm text-black/70">
           <li>
-            Les montants affiches sont des fourchettes basses et hautes, a titre
+            Les montants affichés sont des fourchettes basses et hautes, à titre
             indicatif uniquement.
           </li>
           <li>
-            Les taux, frais et methodes peuvent changer. Verifiez toujours les
+            Les taux, frais et méthodes peuvent changer. Vérifiez toujours les
             sources officielles avant importation.
           </li>
           <li>
-            L'administration des douanes reste la seule autorite capable de
-            determiner les montants definitifs.
+            L'administration des douanes reste la seule autorité capable de
+            déterminer les montants définitifs.
           </li>
         </ul>
       </div>

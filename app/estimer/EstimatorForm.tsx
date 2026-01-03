@@ -10,19 +10,19 @@ const rules = getRules();
 const formSchema = z.object({
   price: z.coerce
     .number({ invalid_type_error: "Entrez un prix valide." })
-    .positive("Le prix doit etre positif."),
+    .positive("Le prix doit être positif."),
   currency: z.enum(["EUR", "MAD"], {
-    required_error: "Selectionnez une devise."
+    required_error: "Sélectionnez une devise."
   }),
   condition: z.enum(["neuf", "occasion"], {
-    required_error: "Selectionnez l'etat."
+    required_error: "Sélectionnez l'état."
   }),
   importMode: z.enum(["voyageur", "envoi"], {
-    required_error: "Selectionnez le mode d'importation."
+    required_error: "Sélectionnez le mode d'importation."
   }),
   quantity: z.coerce
-    .number({ invalid_type_error: "Entrez une quantite valide." })
-    .int("La quantite doit etre un entier.")
+    .number({ invalid_type_error: "Entrez une quantité valide." })
+    .int("La quantité doit être un entier.")
     .min(1, "Minimum 1.")
     .max(5, "Maximum 5.")
 });
@@ -85,17 +85,17 @@ const EstimatorForm = () => {
       <form onSubmit={handleSubmit} className="card space-y-6">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/50">
-            Parametres
+            Paramètres
           </p>
           <h2 className="mt-2 text-2xl font-semibold">Vos informations</h2>
           <p className="mt-2 text-sm text-black/70">
-            Taux fixe utilise: 1 EUR = {rules.exchangeRateEurToMad} MAD.
+            Taux fixe utilisé: 1 EUR = {rules.exchangeRateEurToMad} MAD.
           </p>
         </div>
 
         <div className="space-y-2">
           <label htmlFor="price" className="label">
-            Prix du telephone
+            Prix du téléphone
           </label>
           <input
             id="price"
@@ -132,7 +132,7 @@ const EstimatorForm = () => {
 
           <div className="space-y-2">
             <label htmlFor="condition" className="label">
-              Etat
+              État
             </label>
             <select
               id="condition"
@@ -172,7 +172,7 @@ const EstimatorForm = () => {
 
           <div className="space-y-2">
             <label htmlFor="quantity" className="label">
-              Quantite
+              Quantité
             </label>
             <input
               id="quantity"
@@ -215,7 +215,7 @@ const EstimatorForm = () => {
             <table className="w-full text-sm">
               <thead className="bg-sand text-left text-xs uppercase tracking-[0.08em] text-black/60">
                 <tr>
-                  <th className="px-4 py-3">Detail</th>
+                  <th className="px-4 py-3">Détail</th>
                   <th className="px-4 py-3">Bas</th>
                   <th className="px-4 py-3">Haut</th>
                 </tr>
@@ -249,7 +249,7 @@ const EstimatorForm = () => {
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 font-semibold">Total a payer</td>
+                  <td className="px-4 py-3 font-semibold">Total à payer</td>
                   <td className="px-4 py-3 font-semibold">
                     {result ? formatMad(result.total.low) : "-"}
                   </td>
@@ -274,10 +274,10 @@ const EstimatorForm = () => {
             <h3 className="mt-2 text-xl font-semibold">Variations possibles</h3>
           </div>
           <ul className="space-y-3 text-sm text-black/70">
-            <li>Classification douaniere du produit.</li>
-            <li>Valeur retenue par les douanes apres verification.</li>
+            <li>Classification douanière du produit.</li>
+            <li>Valeur retenue par les douanes après vérification.</li>
             <li>Frais additionnels possibles selon le mode d'importation.</li>
-            <li>Interpretation de l'agent au moment du controle.</li>
+            <li>Interprétation de l'agent au moment du contrôle.</li>
           </ul>
           {rules.notes.length ? (
             <div className="rounded-xl border border-black/10 bg-sand/70 p-4 text-sm text-black/70">

@@ -1,8 +1,8 @@
-# Estimateur des droits de douane au Maroc - Telephones
+# Estimateur des droits de douane au Maroc - Téléphones
 
-MVP 100% statique pour estimer les droits de douane et la TVA sur les telephones importes au Maroc.
+MVP 100% statique pour estimer les droits de douane et la TVA sur les téléphones importés au Maroc.
 
-## Prerequis
+## Prérequis
 - Node.js 18+
 - npm
 
@@ -13,21 +13,21 @@ npm run dev
 ```
 Puis ouvrir `http://localhost:3000`.
 
-## Generer le build statique
+## Générer le build statique
 ```bash
 npm run build
 ```
-Le site statique est genere dans le dossier `out/`.
+Le site statique est généré dans le dossier `out/`.
 
-## Deploiement Cloudflare Pages
+## Déploiement Cloudflare Pages
 1. Poussez le repo sur GitHub ou GitLab.
-2. Creez un nouveau projet Cloudflare Pages.
-3. Configurez:
+2. Créez un nouveau projet Cloudflare Pages.
+3. Configurez :
    - Build command: `npm run build`
    - Output directory: `out`
    - Node version: 18 ou 20
-4. Deployez.
+4. Déployez.
 
 ## Personnalisation rapide
-- Modifiez les regles dans `data/rules.v1.json`.
-- Mettez a jour le domaine dans `public/robots.txt` et `public/sitemap.xml`.
+- Modifiez les règles dans `data/rules.v1.json`.
+- Mettez à jour le domaine dans `public/robots.txt` et `public/sitemap.xml`.

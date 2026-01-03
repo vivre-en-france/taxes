@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Accueil",
   description:
-    "Estimez rapidement les droits de douane pour un telephone importe au Maroc avec une fourchette basse et haute."
+    "Estimez rapidement les droits de douane pour un téléphone importé au Maroc avec une fourchette basse et haute."
 };
 
 const HomePage = () => {
@@ -14,11 +14,11 @@ const HomePage = () => {
         <div className="space-y-6">
           <span className="chip">Estimateur</span>
           <h1 className="text-4xl font-semibold leading-tight md:text-5xl">
-            Estimateur des droits de douane au Maroc - Telephones
+            Estimateur des droits de douane au Maroc - Téléphones
           </h1>
           <p className="text-lg text-black/70">
-            Comprenez le cout potentiel d'importation d'un telephone au Maroc
-            avec une estimation claire, transparente et expliquee.
+            Comprenez le coût potentiel d'importation d'un téléphone au Maroc
+            avec une estimation claire, transparente et expliquée.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link href="/estimer" className="btn-primary">
@@ -42,25 +42,25 @@ const HomePage = () => {
               Ce que vous obtenez
             </p>
             <h2 className="mt-2 text-2xl font-semibold">
-              Une estimation immediate et pedagogique
+              Une estimation immédiate et pédagogique
             </h2>
           </div>
           <ul className="space-y-4 text-sm text-black/70">
             <li>
               <span className="font-semibold text-ink">Valeur en douane</span>
-              : calculee a partir du prix et de la quantite.
+              : calculée à partir du prix et de la quantité.
             </li>
             <li>
               <span className="font-semibold text-ink">Droits de douane</span>
-              : fourchette basse et haute selon le taux applique.
+              : fourchette basse et haute selon le taux appliqué.
             </li>
             <li>
-              <span className="font-semibold text-ink">TVA</span> : estimee
-              sur la base douaniere + droits.
+              <span className="font-semibold text-ink">TVA</span> : estimée
+              sur la base douanière + droits.
             </li>
             <li>
-              <span className="font-semibold text-ink">Total a payer</span> :
-              resume clair des montants potentiels.
+              <span className="font-semibold text-ink">Total à payer</span> :
+              résumé clair des montants potentiels.
             </li>
           </ul>
           <p className="text-sm text-black/60">
@@ -76,16 +76,16 @@ const HomePage = () => {
           </p>
           <h3 className="mt-2 text-xl font-semibold">4 champs et c'est tout</h3>
           <p className="mt-3 text-sm text-black/70">
-            Prix, devise, etat, mode d'importation et quantite. Rien de plus.
+            Prix, devise, état, mode d'importation et quantité. Rien de plus.
           </p>
         </div>
         <div className="card">
           <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/50">
             Transparent
           </p>
-          <h3 className="mt-2 text-xl font-semibold">Regles claires</h3>
+          <h3 className="mt-2 text-xl font-semibold">Règles claires</h3>
           <p className="mt-3 text-sm text-black/70">
-            Les taux sont explicites pour faciliter la comprehension.
+            Les taux sont explicites pour faciliter la compréhension.
           </p>
         </div>
         <div className="card">
@@ -94,7 +94,7 @@ const HomePage = () => {
           </p>
           <h3 className="mt-2 text-xl font-semibold">Disponible partout</h3>
           <p className="mt-3 text-sm text-black/70">
-            Fonctionne sur mobile et desktop, sans prise de tete.
+            Fonctionne sur mobile et desktop, sans prise de tête.
           </p>
         </div>
       </div>

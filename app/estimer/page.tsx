@@ -4,7 +4,7 @@ import EstimatorForm from "@/app/estimer/EstimatorForm";
 export const metadata: Metadata = {
   title: "Estimer",
   description:
-    "Formulaire pour estimer les droits de douane et la TVA sur un telephone importe au Maroc."
+    "Formulaire pour estimer les droits de douane et la TVA sur un téléphone importé au Maroc."
 };
 
 const EstimerPage = () => {
@@ -17,7 +17,7 @@ const EstimerPage = () => {
         </h1>
         <p className="max-w-2xl text-sm text-black/70 lg:max-w-none">
           Remplissez le formulaire pour obtenir une fourchette basse et haute
-          des droits de douane, TVA et total a payer.
+          des droits de douane, TVA et total à payer.
         </p>
       </div>
       <EstimatorForm />

@@ -11,8 +11,8 @@
   },
   "notes": [
     "Le taux de change est fixe pour garder une estimation simple et stable.",
-    "Les frais fixes sont appliques uniquement en cas d'envoi par colis.",
-    "L'etat \"occasion\" applique une reduction indicative de la valeur.",
-    "Les montants finaux peuvent differer selon les justificatifs presentes."
+    "Les frais fixes sont appliqués uniquement en cas d'envoi par colis.",
+    "L'état \"occasion\" applique une réduction indicative de la valeur.",
+    "Les montants finaux peuvent différer selon les justificatifs présentés."
   ]
 }
