@@ -59,6 +59,11 @@ const formatMad = (value: number) =>
     maximumFractionDigits: 2
   }).format(value);
 
+const formatMadCompact = (value: number) =>
+  new Intl.NumberFormat("fr-MA", {
+    maximumFractionDigits: 2
+  }).format(value);
+
 const createId = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
@@ -379,12 +384,12 @@ const EstimatorForm = () => {
 
       <div className="space-y-6">
         <div className="card">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
+          <div className="grid gap-6 md:grid-cols-[1.2fr_0.8fr] md:items-start">
+            <div className="space-y-3">
               <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/50">
                 Niveau de risque
               </p>
-              <div className="mt-2 flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2">
                 <span
                   className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${
                     result
@@ -396,21 +401,21 @@ const EstimatorForm = () => {
                 </span>
                 <span className="text-xs text-black/60">
                   {result
-                    ? `Score indicatif: ${result.risk.score}/100`
+                    ? `Score indicatif · ${result.risk.score}/100`
                     : "Lancez une estimation"}
                 </span>
               </div>
-              <p className="mt-2 text-sm text-black/70">
+              <p className="text-sm text-black/70">
                 {result
                   ? result.risk.verdict
                   : "Décrivez vos téléphones pour obtenir un verdict."}
               </p>
             </div>
-            <div className="text-right">
+            <div className="text-left md:text-right md:border-l md:border-black/10 md:pl-6">
               <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/50">
                 Valeur totale
               </p>
-              <p className="mt-2 text-2xl font-semibold">
+              <p className="mt-2 text-3xl font-semibold">
                 {result ? formatMad(result.totals.totalValue) : "—"}
               </p>
               <p className="text-xs text-black/60">
@@ -431,8 +436,9 @@ const EstimatorForm = () => {
           {result ? (
             result.tax ? (
               <div className="space-y-2">
-                <p className="text-3xl font-semibold">
-                  {formatMad(result.tax.minTax)} - {formatMad(result.tax.maxTax)}
+                <p className="text-2xl font-semibold tabular-nums whitespace-nowrap sm:text-3xl">
+                  {formatMadCompact(result.tax.minTax)} –{" "}
+                  {formatMadCompact(result.tax.maxTax)} MAD
                 </p>
                 <p className="text-sm text-black/70">
                   Basée sur une valeur déclarée de{" "}
