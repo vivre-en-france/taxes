@@ -79,9 +79,9 @@ const createPhone = (overrides: Partial<PhoneForm> = {}): PhoneForm => ({
 });
 
 const riskLabels: Record<EstimateBreakdown["risk"]["level"], string> = {
-  LOW: "Faible",
-  MEDIUM: "Moyen",
-  HIGH: "Élevé"
+  LOW: "Risque faible",
+  MEDIUM: "Risque moyen",
+  HIGH: "Risque élevé"
 };
 
 const riskStyles: Record<EstimateBreakdown["risk"]["level"], string> = {
@@ -389,9 +389,9 @@ const EstimatorForm = () => {
               <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/50">
                 Niveau de risque
               </p>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-3">
                 <span
-                  className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${
+                  className={`inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.08em] ${
                     result
                       ? riskStyles[result.risk.level]
                       : "border-black/10 bg-sand text-black/60"
@@ -428,7 +428,7 @@ const EstimatorForm = () => {
         <div className="card space-y-4">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/50">
-              Estimation des taxes
+              Estimation indicative si taxation appliquée
             </p>
             <h3 className="mt-2 text-xl font-semibold">Fourchette indicative</h3>
           </div>
