@@ -1,39 +1,56 @@
 "use client";
 
-import { useState } from "react";
-import type { ChangeEvent, FormEvent } from "react";
+import { useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { z } from "zod";
 import { estimateCosts, getRules, type EstimateBreakdown } from "@/lib/estimate";
 
 const rules = getRules();
 
-const formSchema = z.object({
+const phoneSchema = z.object({
   price: z.coerce
     .number({ invalid_type_error: "Entrez un prix valide." })
     .positive("Le prix doit être positif."),
   currency: z.enum(["EUR", "MAD"], {
     required_error: "Sélectionnez une devise."
   }),
-  condition: z.enum(["neuf", "occasion"], {
-    required_error: "Sélectionnez l'état."
+  packaging: z.enum(["opened", "sealed", "unknown"], {
+    required_error: "Sélectionnez l'emballage."
   }),
+  personalUse: z.enum(["yes", "no", "unsure"], {
+    required_error: "Indiquez l'usage."
+  })
+});
+
+const formSchema = z.object({
   importMode: z.enum(["voyageur", "envoi"], {
     required_error: "Sélectionnez le mode d'importation."
   }),
-  quantity: z.coerce
-    .number({ invalid_type_error: "Entrez une quantité valide." })
-    .int("La quantité doit être un entier.")
-    .min(1, "Minimum 1.")
-    .max(5, "Maximum 5.")
+  phones: z
+    .array(phoneSchema)
+    .min(1, "Ajoutez au moins un téléphone.")
+    .max(10, "Maximum 10 téléphones.")
 });
 
-type FormValues = {
+type PhoneForm = {
+  id: string;
   price: string;
   currency: "EUR" | "MAD";
-  condition: "neuf" | "occasion";
-  importMode: "voyageur" | "envoi";
-  quantity: string;
+  packaging: "opened" | "sealed" | "unknown";
+  personalUse: "yes" | "no" | "unsure";
 };
+
+type PhoneFieldErrors = Partial<
+  Record<"price" | "currency" | "packaging" | "personalUse", string>
+>;
+
+type FormErrors = {
+  importMode?: string;
+  phones?: string;
+  phoneFields: Record<string, PhoneFieldErrors>;
+};
+
+type ImportMode = "voyageur" | "envoi";
 
 const formatMad = (value: number) =>
   new Intl.NumberFormat("fr-MA", {
@@ -42,41 +59,126 @@ const formatMad = (value: number) =>
     maximumFractionDigits: 2
   }).format(value);
 
-const EstimatorForm = () => {
-  const [values, setValues] = useState<FormValues>({
-    price: "1200",
-    currency: "EUR",
-    condition: "neuf",
-    importMode: "voyageur",
-    quantity: "1"
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [result, setResult] = useState<EstimateBreakdown | null>(null);
+const createId = () =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
-  const handleChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+const createPhone = (overrides: Partial<PhoneForm> = {}): PhoneForm => ({
+  id: createId(),
+  price: "",
+  currency: "MAD",
+  packaging: "unknown",
+  personalUse: "unsure",
+  ...overrides
+});
+
+const riskLabels: Record<EstimateBreakdown["risk"]["level"], string> = {
+  LOW: "Faible",
+  MEDIUM: "Moyen",
+  HIGH: "Élevé"
+};
+
+const riskStyles: Record<EstimateBreakdown["risk"]["level"], string> = {
+  LOW: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  MEDIUM: "border-amber-200 bg-amber-50 text-amber-700",
+  HIGH: "border-red-200 bg-red-50 text-red-700"
+};
+
+const EstimatorForm = () => {
+  const [importMode, setImportMode] = useState<ImportMode>("voyageur");
+  const [phones, setPhones] = useState<PhoneForm[]>([
+    createPhone({
+      price: "1200",
+      currency: "EUR",
+      packaging: "opened",
+      personalUse: "yes"
+    })
+  ]);
+  const [errors, setErrors] = useState<FormErrors>({ phoneFields: {} });
+  const [result, setResult] = useState<EstimateBreakdown | null>(null);
+  const [submittedMode, setSubmittedMode] = useState<ImportMode | null>(null);
+
+  const totalValuePreview = useMemo(() => {
+    return phones.reduce((sum, phone) => {
+      const numericPrice = Number(phone.price);
+      if (!Number.isFinite(numericPrice) || numericPrice <= 0) return sum;
+      const priceInMad =
+        phone.currency === "EUR"
+          ? numericPrice * rules.exchangeRateEurToMad
+          : numericPrice;
+      return sum + priceInMad;
+    }, 0);
+  }, [phones]);
+
+  const handlePhoneChange = (
+    id: string,
+    field: keyof Omit<PhoneForm, "id">,
+    value: string
   ) => {
-    const { name, value } = event.target;
-    setValues((prev) => ({ ...prev, [name]: value }));
+    setPhones((prev) =>
+      prev.map((phone) => (phone.id === id ? { ...phone, [field]: value } : phone))
+    );
+  };
+
+  const handleAddPhone = () => {
+    if (phones.length >= 10) return;
+    setPhones((prev) => [...prev, createPhone()]);
+  };
+
+  const handleRemovePhone = (id: string) => {
+    if (phones.length <= 1) return;
+    setPhones((prev) => prev.filter((phone) => phone.id !== id));
+    setErrors((prev) => {
+      const nextFields = { ...prev.phoneFields };
+      delete nextFields[id];
+      return { ...prev, phoneFields: nextFields };
+    });
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const parsed = formSchema.safeParse(values);
+
+    const payload = {
+      importMode,
+      phones: phones.map(({ id, ...phone }) => phone)
+    };
+
+    const parsed = formSchema.safeParse(payload);
 
     if (!parsed.success) {
-      const fieldErrors = parsed.error.flatten().fieldErrors;
-      setErrors({
-        price: fieldErrors.price?.[0] ?? "",
-        currency: fieldErrors.currency?.[0] ?? "",
-        condition: fieldErrors.condition?.[0] ?? "",
-        importMode: fieldErrors.importMode?.[0] ?? "",
-        quantity: fieldErrors.quantity?.[0] ?? ""
+      const nextErrors: FormErrors = { phoneFields: {} };
+      parsed.error.issues.forEach((issue) => {
+        const [section, index, field] = issue.path;
+        if (section === "importMode") {
+          if (!nextErrors.importMode) nextErrors.importMode = issue.message;
+          return;
+        }
+        if (section === "phones") {
+          if (typeof index !== "number") {
+            if (!nextErrors.phones) nextErrors.phones = issue.message;
+            return;
+          }
+          const phoneId = phones[index]?.id;
+          if (!phoneId) return;
+          if (typeof field === "string") {
+            const current: PhoneFieldErrors =
+              nextErrors.phoneFields[phoneId] ?? {};
+            if (!current[field as keyof PhoneFieldErrors]) {
+              current[field as keyof PhoneFieldErrors] = issue.message;
+              nextErrors.phoneFields[phoneId] = current;
+            }
+            return;
+          }
+          if (!nextErrors.phones) nextErrors.phones = issue.message;
+        }
       });
+      setErrors(nextErrors);
       return;
     }
 
-    setErrors({});
+    setErrors({ phoneFields: {} });
+    setSubmittedMode(parsed.data.importMode);
     setResult(estimateCosts(parsed.data));
   };
 
@@ -87,111 +189,191 @@ const EstimatorForm = () => {
           <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/50">
             Paramètres
           </p>
-          <h2 className="mt-2 text-2xl font-semibold">Vos informations</h2>
+          <h2 className="mt-2 text-2xl font-semibold">Vos téléphones</h2>
           <p className="mt-2 text-sm text-black/70">
             Taux fixe utilisé: 1 EUR = {rules.exchangeRateEurToMad} MAD.
           </p>
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="price" className="label">
-            Prix du téléphone
+          <label htmlFor="importMode" className="label">
+            Mode d'importation
           </label>
-          <input
-            id="price"
-            name="price"
-            type="number"
-            step="0.01"
-            min="0"
+          <select
+            id="importMode"
+            name="importMode"
             className="field"
-            value={values.price}
-            onChange={handleChange}
-          />
-          {errors.price ? <p className="helper text-red-600">{errors.price}</p> : null}
+            value={importMode}
+            onChange={(event) => setImportMode(event.target.value as ImportMode)}
+          >
+            <option value="voyageur">Voyageur (bagages)</option>
+            <option value="envoi">Envoi (colis)</option>
+          </select>
+          {errors.importMode ? (
+            <p className="helper text-red-600">{errors.importMode}</p>
+          ) : null}
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <label htmlFor="currency" className="label">
-              Devise
-            </label>
-            <select
-              id="currency"
-              name="currency"
-              className="field"
-              value={values.currency}
-              onChange={handleChange}
-            >
-              <option value="EUR">EUR</option>
-              <option value="MAD">MAD</option>
-            </select>
-            {errors.currency ? (
-              <p className="helper text-red-600">{errors.currency}</p>
-            ) : null}
-          </div>
+        <div className="space-y-4">
+          {phones.map((phone, index) => {
+            const phoneErrors = errors.phoneFields[phone.id];
+            return (
+              <div
+                key={phone.id}
+                className="rounded-2xl border border-black/10 bg-white/80 p-5 shadow-sm"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm font-semibold text-ink">
+                    Téléphone {index + 1}
+                  </p>
+                  {phones.length > 1 ? (
+                    <button
+                      type="button"
+                      className="btn-ghost px-3 py-2 text-xs"
+                      onClick={() => handleRemovePhone(phone.id)}
+                    >
+                      Supprimer
+                    </button>
+                  ) : null}
+                </div>
 
-          <div className="space-y-2">
-            <label htmlFor="condition" className="label">
-              État
-            </label>
-            <select
-              id="condition"
-              name="condition"
-              className="field"
-              value={values.condition}
-              onChange={handleChange}
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <label htmlFor={`price-${phone.id}`} className="label">
+                      Prix du téléphone
+                    </label>
+                    <input
+                      id={`price-${phone.id}`}
+                      name="price"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      className="field"
+                      value={phone.price}
+                      onChange={(event) =>
+                        handlePhoneChange(phone.id, "price", event.target.value)
+                      }
+                    />
+                    {phoneErrors?.price ? (
+                      <p className="helper text-red-600">{phoneErrors.price}</p>
+                    ) : null}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor={`currency-${phone.id}`} className="label">
+                      Devise
+                    </label>
+                    <select
+                      id={`currency-${phone.id}`}
+                      name="currency"
+                      className="field"
+                      value={phone.currency}
+                      onChange={(event) =>
+                        handlePhoneChange(phone.id, "currency", event.target.value)
+                      }
+                    >
+                      <option value="MAD">MAD</option>
+                      <option value="EUR">EUR</option>
+                    </select>
+                    {phoneErrors?.currency ? (
+                      <p className="helper text-red-600">{phoneErrors.currency}</p>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <label htmlFor={`packaging-${phone.id}`} className="label">
+                      Emballage
+                    </label>
+                    <select
+                      id={`packaging-${phone.id}`}
+                      name="packaging"
+                      className="field"
+                      value={phone.packaging}
+                      onChange={(event) =>
+                        handlePhoneChange(phone.id, "packaging", event.target.value)
+                      }
+                    >
+                      <option value="opened">Ouvert</option>
+                      <option value="sealed">Scellé</option>
+                      <option value="unknown">Inconnu</option>
+                    </select>
+                    {phoneErrors?.packaging ? (
+                      <p className="helper text-red-600">
+                        {phoneErrors.packaging}
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor={`personal-${phone.id}`} className="label">
+                      Usage personnel
+                    </label>
+                    <select
+                      id={`personal-${phone.id}`}
+                      name="personalUse"
+                      className="field"
+                      value={phone.personalUse}
+                      onChange={(event) =>
+                        handlePhoneChange(phone.id, "personalUse", event.target.value)
+                      }
+                    >
+                      <option value="yes">Oui</option>
+                      <option value="no">Non</option>
+                      <option value="unsure">Pas sûr</option>
+                    </select>
+                    {phoneErrors?.personalUse ? (
+                      <p className="helper text-red-600">
+                        {phoneErrors.personalUse}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {errors.phones ? (
+            <p className="helper text-red-600">{errors.phones}</p>
+          ) : null}
+
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <button
+              type="button"
+              className="btn-ghost disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={handleAddPhone}
+              disabled={phones.length >= 10}
             >
-              <option value="neuf">Neuf</option>
-              <option value="occasion">Occasion</option>
-            </select>
-            {errors.condition ? (
-              <p className="helper text-red-600">{errors.condition}</p>
-            ) : null}
+              Ajouter un téléphone
+            </button>
+            <p className="text-xs text-black/60">Maximum 10 téléphones</p>
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <label htmlFor="importMode" className="label">
-              Mode d'importation
-            </label>
-            <select
-              id="importMode"
-              name="importMode"
-              className="field"
-              value={values.importMode}
-              onChange={handleChange}
-            >
-              <option value="voyageur">Voyageur (bagages)</option>
-              <option value="envoi">Envoi (colis)</option>
-            </select>
-            {errors.importMode ? (
-              <p className="helper text-red-600">{errors.importMode}</p>
-            ) : null}
+        <div className="rounded-2xl border border-black/10 bg-sand/70 p-4 text-sm text-black/70">
+          <div className="flex items-center justify-between">
+            <p className="font-semibold text-ink">Résumé</p>
+            <span className="text-xs font-semibold uppercase tracking-[0.08em] text-black/50">
+              MAD
+            </span>
           </div>
-
-          <div className="space-y-2">
-            <label htmlFor="quantity" className="label">
-              Quantité
-            </label>
-            <input
-              id="quantity"
-              name="quantity"
-              type="number"
-              min="1"
-              max="5"
-              className="field"
-              value={values.quantity}
-              onChange={handleChange}
-            />
-            {errors.quantity ? (
-              <p className="helper text-red-600">{errors.quantity}</p>
-            ) : null}
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <div className="flex items-center justify-between">
+              <span>Nombre total</span>
+              <span className="font-semibold text-ink">{phones.length}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Valeur totale</span>
+              <span className="font-semibold text-ink">
+                {totalValuePreview > 0 ? formatMad(totalValuePreview) : "—"}
+              </span>
+            </div>
           </div>
         </div>
 
         <button type="submit" className="btn-primary w-full">
-          Estimer mes frais
+          Estimer mon risque
         </button>
       </form>
 
@@ -200,84 +382,137 @@ const EstimatorForm = () => {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/50">
-                Estimation totale
+                Niveau de risque
               </p>
-              <p className="mt-2 text-3xl font-semibold">
+              <div className="mt-2 flex items-center gap-3">
+                <span
+                  className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${
+                    result
+                      ? riskStyles[result.risk.level]
+                      : "border-black/10 bg-sand text-black/60"
+                  }`}
+                >
+                  {result ? riskLabels[result.risk.level] : "—"}
+                </span>
+                <span className="text-xs text-black/60">
+                  {result
+                    ? `Score indicatif: ${result.risk.score}/100`
+                    : "Lancez une estimation"}
+                </span>
+              </div>
+              <p className="mt-2 text-sm text-black/70">
                 {result
-                  ? `${formatMad(result.total.low)} - ${formatMad(result.total.high)}`
-                  : "Lancez une estimation"}
+                  ? result.risk.verdict
+                  : "Décrivez vos téléphones pour obtenir un verdict."}
               </p>
             </div>
-            <span className="chip">MAD</span>
+            <div className="text-right">
+              <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/50">
+                Valeur totale
+              </p>
+              <p className="mt-2 text-2xl font-semibold">
+                {result ? formatMad(result.totals.totalValue) : "—"}
+              </p>
+              <p className="text-xs text-black/60">
+                {result ? `${result.totals.qty} téléphone(s)` : ""}
+              </p>
+            </div>
           </div>
-
-          <div className="mt-6 overflow-hidden rounded-2xl border border-black/10">
-            <table className="w-full text-sm">
-              <thead className="bg-sand text-left text-xs uppercase tracking-[0.08em] text-black/60">
-                <tr>
-                  <th className="px-4 py-3">Détail</th>
-                  <th className="px-4 py-3">Bas</th>
-                  <th className="px-4 py-3">Haut</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-black/10">
-                <tr>
-                  <td className="px-4 py-3 font-semibold">Valeur en douane</td>
-                  <td className="px-4 py-3">
-                    {result ? formatMad(result.customsValue) : "-"}
-                  </td>
-                  <td className="px-4 py-3">
-                    {result ? formatMad(result.customsValue) : "-"}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-3 font-semibold">Droits de douane</td>
-                  <td className="px-4 py-3">
-                    {result ? formatMad(result.duty.low) : "-"}
-                  </td>
-                  <td className="px-4 py-3">
-                    {result ? formatMad(result.duty.high) : "-"}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-3 font-semibold">TVA</td>
-                  <td className="px-4 py-3">
-                    {result ? formatMad(result.vat.low) : "-"}
-                  </td>
-                  <td className="px-4 py-3">
-                    {result ? formatMad(result.vat.high) : "-"}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-3 font-semibold">Total à payer</td>
-                  <td className="px-4 py-3 font-semibold">
-                    {result ? formatMad(result.total.low) : "-"}
-                  </td>
-                  <td className="px-4 py-3 font-semibold">
-                    {result ? formatMad(result.total.high) : "-"}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <p className="mt-4 text-xs text-black/60">
-            Les frais fixes sont pris en compte uniquement pour les envois.
-          </p>
         </div>
 
         <div className="card space-y-4">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/50">
-              Pourquoi ce montant peut varier
+              Estimation des taxes
             </p>
-            <h3 className="mt-2 text-xl font-semibold">Variations possibles</h3>
+            <h3 className="mt-2 text-xl font-semibold">Fourchette indicative</h3>
+          </div>
+
+          {result ? (
+            result.tax ? (
+              <div className="space-y-2">
+                <p className="text-3xl font-semibold">
+                  {formatMad(result.tax.minTax)} - {formatMad(result.tax.maxTax)}
+                </p>
+                <p className="text-sm text-black/70">
+                  Basée sur une valeur déclarée de{" "}
+                  {formatMad(result.tax.declaredValue)}.
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-black/70">
+                {submittedMode === "envoi"
+                  ? "V1: l'estimation est disponible uniquement pour les bagages."
+                  : "Risque faible: pas de fourchette de taxes affichée."}
+              </p>
+            )
+          ) : (
+            <p className="text-sm text-black/70">
+              Remplissez le formulaire pour obtenir une fourchette.
+            </p>
+          )}
+
+          <div className="rounded-xl border border-black/10 bg-sand/70 p-4 text-sm text-black/70">
+            <p className="font-semibold text-ink">Hypothèses</p>
+            <ul className="mt-2 space-y-2">
+              <li>
+                Taux effectif estimé: {Math.round(rules.effectiveRateLow * 100)}%
+                – {Math.round(rules.effectiveRateHigh * 100)}%.
+              </li>
+              <li>Taux de change fixe: 1 EUR = {rules.exchangeRateEurToMad} MAD.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="card space-y-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/50">
+              Raisons principales
+            </p>
+            <h3 className="mt-2 text-xl font-semibold">Pourquoi ce niveau</h3>
+          </div>
+          {result ? (
+            result.risk.reasons.length ? (
+              <ul className="list-disc space-y-2 pl-5 text-sm text-black/70">
+                {result.risk.reasons.map((reason) => (
+                  <li key={reason}>{reason}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-black/70">
+                Aucun signal majeur détecté avec les informations fournies.
+              </p>
+            )
+          ) : (
+            <p className="text-sm text-black/70">
+              Les raisons principales s'afficheront après estimation.
+            </p>
+          )}
+
+          <div className="rounded-xl border border-black/10 bg-white/80 p-4 text-sm text-black/70">
+            <p className="font-semibold text-ink">Conseils rapides</p>
+            <ul className="mt-2 list-disc space-y-2 pl-5">
+              <li>Gardez les factures ou preuves d'achat à portée.</li>
+              <li>Un téléphone ouvert et utilisé paraît plus personnel.</li>
+              <li>Des explications claires réduisent les incertitudes au contrôle.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="card space-y-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/50">
+              Variations possibles
+            </p>
+            <h3 className="mt-2 text-xl font-semibold">
+              Pourquoi le résultat peut varier
+            </h3>
           </div>
           <ul className="space-y-3 text-sm text-black/70">
-            <li>Classification douanière du produit.</li>
             <li>Valeur retenue par les douanes après vérification.</li>
-            <li>Frais additionnels possibles selon le mode d'importation.</li>
+            <li>Classification douanière et tarifs applicables.</li>
             <li>Interprétation de l'agent au moment du contrôle.</li>
+            <li>Frais additionnels possibles selon le mode d'importation.</li>
           </ul>
           {rules.notes.length ? (
             <div className="rounded-xl border border-black/10 bg-sand/70 p-4 text-sm text-black/70">

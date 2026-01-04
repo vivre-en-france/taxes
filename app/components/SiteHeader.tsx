@@ -18,7 +18,7 @@ const SiteHeader = () => {
             <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/60">
               Estimateur
             </p>
-            <p className="text-lg font-semibold">Droits de douane Maroc</p>
+            <p className="text-lg font-semibold">Risque & taxes Maroc</p>
           </div>
         </Link>
         <nav className="flex flex-wrap items-center gap-3 text-sm font-semibold">

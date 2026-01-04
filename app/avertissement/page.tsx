@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Avertissement",
   description:
-    "Mention légale: outil d'estimation sans valeur officielle pour les droits de douane."
+    "Mention légale: outil indicatif sans valeur officielle pour le risque et les taxes."
 };
 
 const AvertissementPage = () => {
@@ -22,8 +22,8 @@ const AvertissementPage = () => {
         <h2 className="text-xl font-semibold">Mentions importantes</h2>
         <ul className="list-disc space-y-3 pl-5 text-sm text-black/70">
           <li>
-            Les montants affichés sont des fourchettes basses et hautes, à titre
-            indicatif uniquement.
+            Le score de risque et les montants affichés sont indicatifs
+            uniquement.
           </li>
           <li>
             Les taux, frais et méthodes peuvent changer. Vérifiez toujours les

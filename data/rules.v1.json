@@ -1,18 +1,56 @@
 {
   "exchangeRateEurToMad": 10.8,
-  "vatRate": 0.2,
-  "dutyRateLow": 0.1,
-  "dutyRateHigh": 0.25,
-  "fixedFeesLow": 50,
-  "fixedFeesHigh": 150,
-  "conditionMultipliers": {
-    "neuf": 1,
-    "occasion": 0.85
+  "effectiveRateLow": 0.2,
+  "effectiveRateHigh": 0.45,
+  "risk": {
+    "qtyScore": {
+      "one": 10,
+      "two": 35,
+      "threePlus": 70
+    },
+    "maxPriceBuckets": [
+      { "lt": 1500, "score": 5 },
+      { "lt": 4000, "score": 15 },
+      { "lt": 8000, "score": 25 },
+      { "lt": 1000000000, "score": 35 }
+    ],
+    "totalValueBuckets": [
+      { "lt": 2000, "score": 0 },
+      { "lt": 8000, "score": 10 },
+      { "lt": 15000, "score": 20 },
+      { "lt": 1000000000, "score": 30 }
+    ],
+    "priceWeights": {
+      "maxPrice": 0.6,
+      "totalValue": 0.4
+    },
+    "packagingScores": {
+      "noSealedOpened": -5,
+      "oneSealed": 10,
+      "twoPlusSealed": 20,
+      "allOpened": -10,
+      "default": 5
+    },
+    "personalUseScores": {
+      "anyNo": 30,
+      "allYes": -10,
+      "someYesRestUnsure": 10,
+      "allUnsure": 15
+    },
+    "overrides": {
+      "minForThreePlus": 70,
+      "singleOpenedPersonalMax": 20,
+      "twoSealedMin": 60
+    },
+    "labelThresholds": {
+      "lowMax": 25,
+      "mediumMax": 55
+    }
   },
   "notes": [
-    "Le taux de change est fixe pour garder une estimation simple et stable.",
-    "Les frais fixes sont appliqués uniquement en cas d'envoi par colis.",
-    "L'état \"occasion\" applique une réduction indicative de la valeur.",
-    "Les montants finaux peuvent différer selon les justificatifs présentés."
+    "Le taux de change est fixe pour garder une estimation stable.",
+    "Le risque est indicatif et dépend du volume, des emballages et de l'usage déclaré.",
+    "La fourchette utilise un taux effectif bas/haut sans détailler des taux officiels.",
+    "Les montants finaux peuvent varier selon la valeur retenue et la décision de l'agent."
   ]
 }

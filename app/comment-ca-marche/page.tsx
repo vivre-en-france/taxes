@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Comment ça marche",
   description:
-    "Explication pédagogique de la valeur en douane, de la TVA et des variations possibles."
+    "Explication pédagogique du score de risque et de la fourchette de taxes estimées."
 };
 
 const CommentCaMarchePage = () => {
@@ -13,40 +13,43 @@ const CommentCaMarchePage = () => {
         <span className="chip">Pédagogie</span>
         <h1 className="text-3xl font-semibold md:text-4xl">Comment ça marche</h1>
         <p className="max-w-2xl text-sm text-black/70">
-          Comprenez les notions clés utilisées pour estimer vos droits de douane
-          au Maroc.
+          Comprenez les notions clés utilisées pour estimer votre risque et une
+          fourchette indicative de taxes au Maroc.
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="card space-y-3">
-          <h2 className="text-xl font-semibold">Valeur en douane</h2>
+          <h2 className="text-xl font-semibold">Score de risque</h2>
           <p className="text-sm text-black/70">
-            La valeur en douane correspond à la valeur déclarée du téléphone
-            importée, convertie en MAD. Elle sert de base aux calculs suivants.
+            Le risque est calculé à partir de la quantité de téléphones, de
+            l'emballage (ouvert/scellé) et de l'usage déclaré (personnel ou non).
           </p>
           <p className="text-sm text-black/70">
-            Dans cet outil, la valeur est ajustée selon l'état (neuf ou
-            occasion) et la quantité.
-          </p>
-        </div>
-
-        <div className="card space-y-3">
-          <h2 className="text-xl font-semibold">TVA</h2>
-          <p className="text-sm text-black/70">
-            La TVA est appliquée sur la valeur en douane additionnée aux droits
-            estimés et aux frais fixes éventuels. Le taux est fixe pour garder
-            une estimation simple.
+            Plus il y a d'appareils scellés ou de valeurs élevées, plus le score
+            augmente.
           </p>
         </div>
 
         <div className="card space-y-3">
-          <h2 className="text-xl font-semibold">Pourquoi les montants varient</h2>
+          <h2 className="text-xl font-semibold">Fourchette de taxes</h2>
+          <p className="text-sm text-black/70">
+            La fourchette est basée sur la valeur totale déclarée et un taux
+            effectif bas/haut. Elle n'indique pas de taux officiels.
+          </p>
+          <p className="text-sm text-black/70">
+            En V1, l'estimation n'est affichée que pour les voyageurs avec un
+            risque moyen ou élevé.
+          </p>
+        </div>
+
+        <div className="card space-y-3">
+          <h2 className="text-xl font-semibold">Pourquoi les résultats varient</h2>
           <ul className="list-disc space-y-2 pl-5 text-sm text-black/70">
-            <li>Classification douanière du produit.</li>
             <li>Valeur retenue par les douanes après vérification.</li>
-            <li>Frais additionnels possibles (assurance, transport, dossier).</li>
-            <li>Interprétation de l'agent et contrôle sur place.</li>
+            <li>Classification douanière du produit.</li>
+            <li>Décision de l'agent au moment du contrôle.</li>
+            <li>Frais additionnels possibles selon le mode d'importation.</li>
           </ul>
         </div>
       </div>
