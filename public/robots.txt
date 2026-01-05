@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://estimateur-douane-telephones.pages.dev/sitemap.xml
+Sitemap: https://taxes-1ut.pages.dev/sitemap.xml
