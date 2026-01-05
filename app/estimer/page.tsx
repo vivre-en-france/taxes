@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 
 const EstimerPage = () => {
   return (
-    <div className="container-shell py-12">
-      <div className="mb-10 space-y-4">
+    <div className="container-shell py-10 md:py-12">
+      <div className="mb-8 space-y-4 md:mb-10">
         <span className="chip">Estimateur</span>
         <h1 className="text-3xl font-semibold md:text-4xl">
           Estimez votre risque et la fourchette de taxes
