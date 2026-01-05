@@ -78,6 +78,7 @@ type Rules = {
       minForThreePlus: number;
       singleOpenedPersonalMax: number;
       twoSealedMin: number;
+      twoPersonalLowMax: number;
     };
     labelThresholds: {
       lowMax: number;
@@ -143,11 +144,23 @@ const buildReasons = (input: {
   totalValue: number;
   maxPrice: number;
   sealedCount: number;
+  openedCount: number;
+  personalYesCount: number;
   personalNoCount: number;
 }) => {
   const reasons: string[] = [];
+  const isTwoPhonesPersonal =
+    input.qty === 2 &&
+    input.personalNoCount === 0 &&
+    input.personalYesCount >= 1 &&
+    input.sealedCount === 0 &&
+    input.openedCount >= 1;
 
-  if (input.qty >= 3) {
+  if (isTwoPhonesPersonal) {
+    reasons.push(
+      "Deux téléphones déclarés pour usage personnel (perso + travail)."
+    );
+  } else if (input.qty >= 3) {
     reasons.push(
       "Vous transportez 3 téléphones ou plus, souvent perçu comme non personnel."
     );
@@ -157,30 +170,32 @@ const buildReasons = (input: {
     );
   }
 
-  if (input.sealedCount >= 2) {
-    reasons.push(
-      "Plusieurs téléphones sont scellés, ce qui ressemble à de la revente."
-    );
-  } else if (input.sealedCount === 1) {
-    reasons.push(
-      "Un téléphone scellé peut augmenter la suspicion de revente."
-    );
-  }
+  if (!isTwoPhonesPersonal) {
+    if (input.sealedCount >= 2) {
+      reasons.push(
+        "Plusieurs téléphones sont scellés, ce qui ressemble à de la revente."
+      );
+    } else if (input.sealedCount === 1) {
+      reasons.push(
+        "Un téléphone scellé peut augmenter la suspicion de revente."
+      );
+    }
 
-  if (input.personalNoCount >= 1) {
-    reasons.push("Au moins un téléphone est déclaré comme non personnel.");
-  }
+    if (input.personalNoCount >= 1) {
+      reasons.push("Au moins un téléphone est déclaré comme non personnel.");
+    }
 
-  if (input.maxPrice > 8000) {
-    reasons.push(
-      "Au moins un téléphone a une valeur élevée, ce qui augmente le contrôle."
-    );
-  }
+    if (input.maxPrice > 8000) {
+      reasons.push(
+        "Au moins un téléphone a une valeur élevée, ce qui augmente le contrôle."
+      );
+    }
 
-  if (input.totalValue > 15000) {
-    reasons.push(
-      "La valeur totale est élevée, ce qui augmente la probabilité de taxation."
-    );
+    if (input.totalValue > 15000) {
+      reasons.push(
+        "La valeur totale est élevée, ce qui augmente la probabilité de taxation."
+      );
+    }
   }
 
   return reasons.slice(0, 5);
@@ -245,6 +260,12 @@ export const estimateCosts = (input: EstimateInput): EstimateBreakdown => {
   }
 
   let score = qtyScore + priceScore + packagingScore + personalUseScore;
+  const isTwoPhonesPersonal =
+    qty === 2 &&
+    personalNoCount === 0 &&
+    personalYesCount >= 1 &&
+    sealedCount === 0 &&
+    openedCount >= 1;
 
   if (qty >= 3) {
     score = Math.max(score, rules.risk.overrides.minForThreePlus);
@@ -259,6 +280,9 @@ export const estimateCosts = (input: EstimateInput): EstimateBreakdown => {
   if (qty === 2 && sealedCount === 2) {
     score = Math.max(score, rules.risk.overrides.twoSealedMin);
   }
+  if (isTwoPhonesPersonal) {
+    score = Math.min(score, rules.risk.overrides.twoPersonalLowMax);
+  }
 
   const clampedScore = clamp(score, 0, 100);
   const label = riskLabel(clampedScore);
@@ -267,6 +291,8 @@ export const estimateCosts = (input: EstimateInput): EstimateBreakdown => {
     totalValue,
     maxPrice,
     sealedCount,
+    openedCount,
+    personalYesCount,
     personalNoCount
   });
 

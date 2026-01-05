@@ -40,7 +40,8 @@
     "overrides": {
       "minForThreePlus": 70,
       "singleOpenedPersonalMax": 20,
-      "twoSealedMin": 60
+      "twoSealedMin": 60,
+      "twoPersonalLowMax": 25
     },
     "labelThresholds": {
       "lowMax": 25,
