@@ -24,12 +24,12 @@ const SiteHeader = () => {
             </p>
           </div>
         </Link>
-        <nav className="flex w-full items-center gap-2 overflow-x-auto text-sm font-semibold md:w-auto md:gap-3 md:overflow-visible">
+        <nav className="grid w-full grid-cols-1 gap-2 text-sm font-semibold sm:grid-cols-3 md:flex md:w-auto md:items-center md:gap-3">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="shrink-0 whitespace-nowrap rounded-full px-3 py-2 text-black/70 transition hover:text-ink"
+              className="flex items-center justify-center rounded-full border border-black/15 bg-white/80 px-4 py-2 text-center text-ink shadow-sm transition hover:border-black/30 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
             >
               {item.label}
             </Link>
