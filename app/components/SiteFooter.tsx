@@ -5,7 +5,7 @@ const SiteFooter = () => {
     <footer className="border-t border-black/10 bg-white/70">
       <div className="container-shell flex flex-col gap-6 py-10 text-sm text-black/70 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="font-semibold text-ink">Estimateur risque & taxes - Téléphones</p>
+          <p className="font-semibold text-ink">Estimateur douane & taxes - Téléphones</p>
           <p className="mt-2 max-w-xl">
             Outil d'estimation. Les résultats sont indicatifs et ne remplacent
             pas une décision officielle de l'administration.

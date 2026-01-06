@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Avertissement",
   description:
-    "Mention légale: outil indicatif sans valeur officielle pour le risque et les taxes."
+    "Mention légale: outil indicatif sans valeur officielle pour le risque de douane et les taxes."
 };
 
 const AvertissementPage = () => {

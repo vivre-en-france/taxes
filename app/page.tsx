@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Accueil",
   description:
-    "Estimez le risque et la fourchette de taxes pour plusieurs téléphones importés au Maroc."
+    "Estimez le risque de douane et la fourchette de taxes pour plusieurs téléphones importés au Maroc."
 };
 
 const HomePage = () => {
@@ -14,10 +14,10 @@ const HomePage = () => {
         <div className="space-y-6">
           <span className="chip">Estimateur</span>
           <h1 className="text-4xl font-semibold leading-tight md:text-5xl">
-            Estimateur risque & taxes au Maroc - Téléphones
+            Estimateur douane: risque &amp; taxes au Maroc - Téléphones
           </h1>
           <p className="text-lg text-black/70">
-            Mesurez le risque de taxation et obtenez une fourchette indicative
+            Mesurez le risque de douane et obtenez une fourchette indicative
             pour plusieurs téléphones, avec des raisons claires.
           </p>
           <div className="flex flex-wrap gap-4">

@@ -13,11 +13,11 @@ const sora = Sora({
 
 export const metadata: Metadata = {
   title: {
-    default: "Estimateur risque & taxes au Maroc - Téléphones",
-    template: "%s | Estimateur risque Maroc"
+    default: "Estimateur douane & taxes au Maroc - Téléphones",
+    template: "%s | Estimateur douane Maroc"
   },
   description:
-    "Outil pour estimer le risque et la fourchette de taxes pour les téléphones importés au Maroc."
+    "Outil pour estimer le risque de douane et la fourchette de taxes pour les téléphones importés au Maroc."
 };
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {

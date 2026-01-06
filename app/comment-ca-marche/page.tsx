@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Comment ça marche",
   description:
-    "Explication pédagogique du score de risque et de la fourchette de taxes estimées."
+    "Explication pédagogique du score de risque de douane et de la fourchette de taxes estimées."
 };
 
 const CommentCaMarchePage = () => {
@@ -13,8 +13,8 @@ const CommentCaMarchePage = () => {
         <span className="chip">Pédagogie</span>
         <h1 className="text-3xl font-semibold md:text-4xl">Comment ça marche</h1>
         <p className="max-w-2xl text-sm text-black/70">
-          Comprenez les notions clés utilisées pour estimer votre risque et une
-          fourchette indicative de taxes au Maroc.
+          Comprenez les notions clés utilisées pour estimer votre risque de
+          douane et une fourchette indicative de taxes au Maroc.
         </p>
       </div>
 

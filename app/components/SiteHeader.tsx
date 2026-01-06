@@ -11,14 +11,14 @@ const SiteHeader = () => {
     <header className="border-b border-black/10 bg-white/70 backdrop-blur">
       <div className="container-shell flex flex-col gap-3 py-3 md:flex-row md:items-center md:justify-between md:py-4">
         <Link href="/" className="flex w-full items-center gap-3 md:w-auto">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-accent text-white shadow-float md:h-10 md:w-10">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-accent text-sm font-semibold text-white shadow-float md:h-12 md:w-12 md:text-base">
             MA
           </span>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-black/60 md:text-sm">
-              Estimateur
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-black/60 md:text-base">
+              Estimateur douane
             </p>
-            <p className="text-base font-semibold md:text-lg">
+            <p className="text-lg font-semibold leading-tight md:text-xl">
               <span className="md:hidden">Risque &amp; taxes</span>
               <span className="hidden md:inline">Risque &amp; taxes Maroc</span>
             </p>
